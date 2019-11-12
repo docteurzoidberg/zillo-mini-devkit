@@ -23,8 +23,8 @@ module grid(){
 	firstled_y=socle_walls;
 	difference(){
 		cube([matrix_width,matrix_length,grid_h]);
-		for(x=[0:leds_x]){
-			for(y=[0:leds_y]){
+		for(x=[0:leds_x-1]){
+			for(y=[0:leds_y-1]){
 				posx=firstled_x+(x*led_spacing);
 				posy=firstled_y+(y*led_spacing);
 				translate([posx,posy,-.1])
@@ -46,8 +46,8 @@ module diffuser() {
 			cube([diffuser_l,diffuser_w,diffuser_walls]);
 			firstled_x=diffuser_walls+socle_walls+4;
 			firstled_y=diffuser_walls+socle_walls+4;
-			for(x=[0:7]){
-				for(y=[0:7]){
+			for(x=[0:leds_x-1]){
+				for(y=[0:leds_y-1]){
 					posx=firstled_x+(x*led_spacing);
 					posy=firstled_y+(y*led_spacing);
 					translate([posx,posy,-.1])
@@ -56,9 +56,7 @@ module diffuser() {
 			}
 		}
 	}
-	
 }
-
 
 module top() {
 	difference(){
@@ -70,19 +68,15 @@ module top() {
 		grid();
 }
 
-
 module preview(){
-	
-top();
-translate([-3,-3,socle_h-diffuser_shell+25])
-	diffuser();
+	top();
+	translate([-3,-3,socle_h-diffuser_shell+25])
+		diffuser();
 }
-
 
 preview();
 //diffuser();
 //top();
-//grid();
 
 
 
