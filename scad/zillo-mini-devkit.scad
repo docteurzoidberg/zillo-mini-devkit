@@ -47,14 +47,14 @@ diffuser_walls=1;
 diffuser_l=socle_l+(diffuser_walls*2)+2;
 diffuser_w=socle_w+(diffuser_walls*2)+2;
 diffuser_h=16;
-diffuser_shell=4;
+diffuser_shell=8;
 
 module diffuser() {
 	//base
 	difference(){
 		cube([diffuser_l,diffuser_w,diffuser_shell]);
-		translate([diffuser_walls+1,diffuser_walls+1,-.1])
-			cube([diffuser_l-diffuser_walls*2-2,diffuser_w-diffuser_walls*2-2,diffuser_shell+.2]);
+		translate([diffuser_walls+1-.2,diffuser_walls+1-.2,-.1])
+			#cube([diffuser_l-diffuser_walls*2-2+.4,diffuser_w-diffuser_walls*2-2+.4,diffuser_shell+.2]);
 	}
 	
 	translate([0,0,diffuser_shell]) {
@@ -103,15 +103,30 @@ module diffuser() {
 
 //-----------------------------------------------------------------------------------
 
+bottom_walls=diffuser_walls;
+bottom_l=socle_l+(bottom_walls*2)+2;
+bottom_w=socle_w+(bottom_walls*2)+2;
+
+module bottom() {
+	difference(){
+		cube([bottom_l,bottom_w,diffuser_shell]);
+		translate([bottom_walls+1-.2,bottom_walls+1-.2,bottom_walls])
+			cube([bottom_l-bottom_walls*2-2+.4,bottom_w-bottom_walls*2-2+.4,100]);
+	}
+}
+
+
 module preview(){
 	top();
 	translate([-2,-2,socle_h-diffuser_shell])
 		%diffuser();
+	translate([-2,-2,-diffuser_shell])
+		bottom();
 }
 
-//review();
-diffuser();
+preview();
+///diffuser();
 //top();
-
+//bottom();
 
 
