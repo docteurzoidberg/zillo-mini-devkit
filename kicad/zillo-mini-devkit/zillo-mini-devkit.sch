@@ -15,22 +15,11 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L Connector_Generic:Conn_01x19 J1
-U 1 1 5DB97CA2
-P 3750 1950
-F 0 "J1" H 3830 1992 50  0000 L CNN
-F 1 "Conn_01x19" H 3830 1901 50  0000 L CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x19_Pitch2.54mm" H 3750 1950 50  0001 C CNN
-F 3 "~" H 3750 1950 50  0001 C CNN
-	1    3750 1950
-	1    0    0    -1  
-$EndComp
-$Comp
 L Connector_Generic:Conn_01x19 J2
 U 1 1 5DB9ABE5
 P 4850 1950
-F 0 "J2" H 4768 825 50  0000 C CNN
-F 1 "Conn_01x19" H 4768 916 50  0000 C CNN
+F 0 "J2" H 4800 900 50  0000 C CNN
+F 1 "Conn_01x19" H 4800 800 50  0000 C CNN
 F 2 "Pin_Headers:Pin_Header_Straight_1x19_Pitch2.54mm" H 4850 1950 50  0001 C CNN
 F 3 "~" H 4850 1950 50  0001 C CNN
 	1    4850 1950
@@ -42,10 +31,6 @@ Text GLabel 5450 1150 2    50   UnSpc ~ 0
 GND
 Text GLabel 5450 2850 2    50   UnSpc ~ 0
 3V3
-Text GLabel 3250 2850 0    50   UnSpc ~ 0
-GND
-Text GLabel 3250 1050 0    50   Input ~ 0
-CLK
 Text GLabel 1000 2050 0    50   Input ~ 0
 SCL
 Text GLabel 1000 2200 0    50   Input ~ 0
@@ -81,17 +66,6 @@ F 1 "GND" H 5355 1127 50  0000 C CNN
 F 2 "" H 5350 1300 50  0001 C CNN
 F 3 "" H 5350 1300 50  0001 C CNN
 	1    5350 1300
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR0104
-U 1 1 5DBA466C
-P 3350 3000
-F 0 "#PWR0104" H 3350 2750 50  0001 C CNN
-F 1 "GND" H 3355 2827 50  0000 C CNN
-F 2 "" H 3350 3000 50  0001 C CNN
-F 3 "" H 3350 3000 50  0001 C CNN
-	1    3350 3000
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -206,9 +180,9 @@ Wire Wire Line
 Connection ~ 1350 1750
 Connection ~ 1150 2050
 Connection ~ 1350 2200
-Text GLabel 3250 1200 0    50   Input ~ 0
+Text GLabel 3500 2650 0    50   Input ~ 0
 SCL
-Text GLabel 3250 1350 0    50   Input ~ 0
+Text GLabel 3500 2350 0    50   Input ~ 0
 SDA
 $Comp
 L Connector_Generic:Conn_01x03 CONN_LED1
@@ -240,13 +214,6 @@ Connection ~ 5350 2850
 Wire Wire Line
 	5350 2850 5450 2850
 Wire Wire Line
-	3250 2850 3350 2850
-Wire Wire Line
-	3350 3000 3350 2850
-Connection ~ 3350 2850
-Wire Wire Line
-	3350 2850 3550 2850
-Wire Wire Line
 	5050 1050 5350 1050
 Wire Wire Line
 	5050 1150 5350 1150
@@ -260,9 +227,9 @@ Wire Wire Line
 Connection ~ 5350 1050
 Wire Wire Line
 	5350 1050 5450 1050
-Text Notes 4150 1350 0    50   ~ 0
+Text Notes 4250 1100 0    50   ~ 0
 ESP32
-Text GLabel 1400 2850 0    50   UnSpc ~ 0
+Text GLabel 1400 2750 0    50   UnSpc ~ 0
 5V
 Text GLabel 1400 2950 0    50   UnSpc ~ 0
 GND
@@ -295,12 +262,8 @@ Wire Wire Line
 	1400 3850 2000 3850
 Wire Wire Line
 	1400 2950 2000 2950
-Wire Wire Line
-	1400 2850 2000 2850
-Text GLabel 1400 2750 0    50   Output ~ 0
+Text GLabel 1400 2850 0    50   Output ~ 0
 LEDMATRIX
-Wire Wire Line
-	2000 2750 1400 2750
 Wire Wire Line
 	2000 3750 1400 3750
 Wire Wire Line
@@ -353,4 +316,43 @@ Text GLabel 1400 3950 0    50   Input ~ 0
 3V3
 Wire Wire Line
 	1400 3950 2000 3950
+$Comp
+L Connector_Generic:Conn_01x19 J1
+U 1 1 5DB97CA2
+P 3950 1950
+F 0 "J1" H 3850 900 50  0000 L CNN
+F 1 "Conn_01x19" H 3700 800 50  0000 L CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x19_Pitch2.54mm" H 3950 1950 50  0001 C CNN
+F 3 "~" H 3950 1950 50  0001 C CNN
+	1    3950 1950
+	1    0    0    1   
+$EndComp
+Wire Wire Line
+	3600 3000 3600 2850
+Wire Wire Line
+	3500 2850 3600 2850
+$Comp
+L power:GND #PWR0104
+U 1 1 5DBA466C
+P 3600 3000
+F 0 "#PWR0104" H 3600 2750 50  0001 C CNN
+F 1 "GND" H 3605 2827 50  0000 C CNN
+F 2 "" H 3600 3000 50  0001 C CNN
+F 3 "" H 3600 3000 50  0001 C CNN
+	1    3600 3000
+	1    0    0    -1  
+$EndComp
+Text GLabel 3500 2850 0    50   UnSpc ~ 0
+GND
+Wire Wire Line
+	3500 2650 3750 2650
+Wire Wire Line
+	3500 2350 3750 2350
+Wire Wire Line
+	3600 2850 3750 2850
+Connection ~ 3600 2850
+Wire Wire Line
+	1400 2850 2000 2850
+Wire Wire Line
+	2000 2750 1400 2750
 $EndSCHEMATC
