@@ -54,7 +54,7 @@ module diffuser() {
 	difference(){
 		cube([diffuser_l,diffuser_w,diffuser_shell]);
 		translate([diffuser_walls+1-.2,diffuser_walls+1-.2,-.1])
-			#cube([diffuser_l-diffuser_walls*2-2+.4,diffuser_w-diffuser_walls*2-2+.4,diffuser_shell+.2]);
+			cube([diffuser_l-diffuser_walls*2-2+.4,diffuser_w-diffuser_walls*2-2+.4,diffuser_shell+.2]);
 	}
 	
 	translate([0,0,diffuser_shell]) {
@@ -124,9 +124,9 @@ module preview(){
 		bottom();
 }
 
-preview();
-///diffuser();
+//preview();
+//diffuser();
 //top();
-//bottom();
+bottom();
 
 
