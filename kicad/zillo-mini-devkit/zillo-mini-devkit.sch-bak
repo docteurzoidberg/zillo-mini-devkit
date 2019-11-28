@@ -383,4 +383,8 @@ Wire Wire Line
 Connection ~ 5350 1550
 Wire Wire Line
 	5350 1550 5450 1550
+Text GLabel 5450 1850 2    50   Output ~ 0
+LEDMATRIX
+Wire Wire Line
+	5050 1850 5450 1850
 $EndSCHEMATC
