@@ -355,4 +355,36 @@ Wire Wire Line
 	1400 2850 2000 2850
 Wire Wire Line
 	2000 2750 1400 2750
+Text GLabel 5450 2450 2    50   Input ~ 0
+MICROPHONE
+Wire Wire Line
+	5050 2450 5450 2450
+Text GLabel 5450 2050 2    50   Output ~ 0
+SPEAKER
+Wire Wire Line
+	5450 2050 5050 2050
+Text GLabel 5450 1550 2    50   UnSpc ~ 0
+GND
+$Comp
+L power:GND #PWR?
+U 1 1 5DE04BD4
+P 5350 1650
+F 0 "#PWR?" H 5350 1400 50  0001 C CNN
+F 1 "GND" H 5355 1477 50  0000 C CNN
+F 2 "" H 5350 1650 50  0001 C CNN
+F 3 "" H 5350 1650 50  0001 C CNN
+	1    5350 1650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5050 1550 5350 1550
+Wire Wire Line
+	5350 1650 5350 1550
+Connection ~ 5350 1550
+Wire Wire Line
+	5350 1550 5450 1550
+Text GLabel 5450 1850 2    50   Output ~ 0
+LEDMATRIX
+Wire Wire Line
+	5050 1850 5450 1850
 $EndSCHEMATC
