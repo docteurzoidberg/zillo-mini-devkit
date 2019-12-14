@@ -284,12 +284,32 @@ module support_esp32() {
 	}
 }
 
+module cuberond(l,w,h) {
+	translate([(-l+3)/2,(-w+3)/2,0])
+	minkowski() {
+		cube([l-3,w-3,h]);
+		cylinder(h,3/2,3/2,$fn=100);
+	}
+}
+
+
+bottom_h=16;
 module bottom() {
 	difference(){
-		cube([bottom_l,bottom_w,diffuser_shell]);
+		cube([bottom_l,bottom_w,bottom_h]);
 		translate([bottom_walls+1-.2,bottom_walls+1-.2,bottom_walls])
 			cube([bottom_l-bottom_walls*2-2+.4,bottom_w-bottom_walls*2-2+.4,100]);
+		
+		//forme decoupe usb
+		translate([bottom_l/2,bottom_w,4])
+			rotate([90,0,0])
+				cuberond(l=10,w=5,h=2);
+		
 	}
+	
+	translate([bottom_l/2,bottom_w-(pcbl/2)-bottom_walls-1+.4,0])
+		rotate([0,0,180])
+			support_esp32();
 }
 
 diamic=9.4;
@@ -346,7 +366,7 @@ module preview(){
 }
 
 //Impression supports de test
-support_esp32();
+//support_esp32();
 //support_speaker();
 //support_micro();
 
@@ -366,7 +386,9 @@ translate([0,0,5+1.6])
 */
 
 //preview();
+
 //diffuser(type="colonne1");
 //diffuser(type="colonne2");
 //top();
-//bottom();
+bottom();
+//cuberond(10,10,1);
