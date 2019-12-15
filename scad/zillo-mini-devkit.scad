@@ -232,26 +232,26 @@ module formedecoupe_esp32() {
 		
 	//usb
 	translate([0,-(pcbl/2)+((usbw)/2)-1.6,esp32_epaisseurpcb+usbh/2])
-		cube([usbl+.2,usbw*2,usbh+.8], center=true); 
+		cube([usbl+.2,usbw*2,usbh+1.6], center=true); 
 	
 	//boutons
 	translate([7.8,-(pcbl/2)+((btnbodyl+.2)/2)+1,esp32_epaisseurpcb]){
 		translate([0,0,btnbodyh/2])
-			cube([btnbodyw+.2,btnbodyl+.2,btnbodyh], center=true);
+			cube([btnbodyw+.8,btnbodyl+.8,btnbodyh+1], center=true);
 		translate([0,0,btnbodyh-.1])
 			cylinder(btndecoupeh,3/2,3/2, $fn=30);
 	}
 	translate([-7.8,-(pcbl/2)+((btnbodyl+.2)/2)+1,esp32_epaisseurpcb]){
 		translate([0,0,btnbodyh/2])
-			cube([btnbodyw+.2,btnbodyl+.2,btnbodyh], center=true);
+			cube([btnbodyw+.8,btnbodyl+.8,btnbodyh+1], center=true);
 		translate([0,0,btnbodyh-.1])
 			cylinder(btndecoupeh,3/2,3/2, $fn=30);
 	}
 	
 	//module esp
-	moduleh=4;
-	modulew=17;
-	modulel=19;
+	moduleh=5.2;
+	modulew=20;
+	modulel=20;
 	translate([0,11,esp32_epaisseurpcb+moduleh/2])
 		cube([modulew,modulel,moduleh],center=true);
 	
@@ -261,17 +261,17 @@ module formedecoupe_esp32() {
 	
 	//pins des pinheaders
 	translate([-(pcbw/2)+pinhdw/2,0,esp32_epaisseurpcb+pinhdh/2])
-		cube([pinhdw,pinhdl,pinhdh],center=true);
+		cube([pinhdw,pinhdl,pinhdh+.6],center=true);
 	translate([(pcbw/2)-pinhdw/2,0,esp32_epaisseurpcb+pinhdh/2])
-		cube([pinhdw,pinhdl,pinhdh],center=true);
+		cube([pinhdw,pinhdl,pinhdh+.6],center=true);
 	
 	//composants (simplifie)
 	translate([0,0,esp32_epaisseurpcb+pinhdh/2])
-		cube([pcbw-(2*pinhdw),pinhdl,pinhdh],center=true); 
+		cube([pcbw-(2*pinhdw),pinhdl-4,pinhdh+2],center=true); 
 	
 	//pcb moduleesp (simplifie)
 	translate([0,10,esp32_epaisseurpcb+0.5+.2])
-		#cube([18,pinhdl,1.2],center=true);
+		cube([18,pinhdl,1.2],center=true);
 }
 
 module support_esp32() {
@@ -301,15 +301,24 @@ module bottom() {
 			cube([bottom_l-bottom_walls*2-2+.4,bottom_w-bottom_walls*2-2+.4,100]);
 		
 		//forme decoupe usb
-		translate([bottom_l/2,bottom_w,4])
+		translate([bottom_l/2,bottom_w,4+bottom_walls])
 			rotate([90,0,0])
 				cuberond(l=10,w=5,h=2);
 		
+		translate([bottom_l/2,bottom_w-(pcbl/2)-bottom_walls-1.5+.4,bottom_walls])
+			rotate([0,0,180])
+				translate([0,0,5+esp32_epaisseurpcb+.1])
+					rotate([0,180,0])
+						#formedecoupe_esp32();
 	}
 	
-	translate([bottom_l/2,bottom_w-(pcbl/2)-bottom_walls-1+.4,0])
+	translate([bottom_l/2,bottom_w-(pcbl/2)-bottom_walls-1.5+.4,bottom_walls])
 		rotate([0,0,180])
 			support_esp32();
+	
+	
+	
+	
 }
 
 diamic=9.4;
@@ -366,7 +375,7 @@ module preview(){
 }
 
 //Impression supports de test
-support_esp32();
+//support_esp32();
 //support_speaker();
 //support_micro();
 
@@ -385,7 +394,7 @@ translate([0,0,5+1.6])
 		formedecoupe_esp32();
 */
 
-//preview();
+preview();
 
 //diffuser(type="colonne1");
 //diffuser(type="colonne2");
