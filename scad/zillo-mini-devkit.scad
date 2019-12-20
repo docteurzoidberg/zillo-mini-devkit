@@ -1,5 +1,4 @@
-use <libsupportpcb.scad>;
-
+//matrice leds
 leds_x=8;
 leds_y=8;
 led_spacing=10;
@@ -8,6 +7,42 @@ led_l=6;
 led_w=6;
 matrix_length=leds_x*led_spacing;
 matrix_width=leds_y*led_spacing;
+
+//fond
+socle_walls=2;
+socle_l=socle_walls+1+matrix_length+1+socle_walls;
+socle_w=socle_walls+1+matrix_width+1+socle_walls;
+socle_h=32;
+bottom_walls=1;
+bottom_l=socle_l+(bottom_walls*2)+2;
+bottom_w=socle_w+(bottom_walls*2)+2;
+
+//diffuseur
+diffuser_walls=bottom_walls;
+diffuser_l=socle_l+(diffuser_walls*2)+2;
+diffuser_w=socle_w+(diffuser_walls*2)+2;
+diffuser_h=16;
+diffuser_shell=8;
+
+//forme esp32
+esp32_epaisseurpcb=1.6;
+btnbodyl=3.92;
+btnbodyw=2.96;
+btnbodyh=1.8;
+pcbw=28;
+pcbl=54.6;
+
+//support micro
+diamic=9.4;
+lmic=20;
+wmic=14;
+hmic=5;
+
+diaspk=20;
+hspk=1;
+hsupportspk=9;
+diasupportspk=30;
+bottom_h=16;
 
 //validé: correspond parfait a la matrice!
 module grid(){
@@ -26,47 +61,58 @@ module grid(){
 	}
 }
 
-//-----------------------------------------------------------------------------------
+module bodydecoupe() {
+	//decoupe support pcb
+	translate([socle_l/2,socle_w,6.6/2])
+		cube([pcbw+.4,20,5+1.6],center=true);
+	
+	//decoupe support micro
+	translate([bottom_l/2 -2-2.2,0,wmic/2-.1])
+		cube([lmic+.6,10,wmic+.7],center=true);
+}
 
-socle_walls=2;
-socle_l=socle_walls+1+matrix_length+1+socle_walls;
-socle_w=socle_walls+1+matrix_width+1+socle_walls;
-socle_h=22;
-
-module top() {
-	difference(){
-		cube([socle_l,socle_w,socle_h]);
-		translate([socle_walls+1,socle_walls+1,-.1])
-			cube([socle_l-socle_walls*2-2,socle_w-socle_walls*2-2,socle_h+.2]);
+module body() {
+	difference() {
+		union() {
+			
+			//shell cube
+			difference(){
+				cube([socle_l,socle_w,socle_h]);
+				translate([socle_walls+1,socle_walls+1,-.1])
+					cube([socle_l-socle_walls*2-2,socle_w-socle_walls*2-2,socle_h+.2]);
+			}
+			
+			//grille matrice
+			translate([socle_walls+1,socle_walls+1,socle_h-grid_h])
+				grid();
+		}
+		
+		//decoupes
+		bodydecoupe();	
 	}
-	translate([socle_walls+1,socle_walls+1,socle_h-grid_h])
-		grid();
 }
 
 //-----------------------------------------------------------------------------------
-
-diffuser_walls=1;
-diffuser_l=socle_l+(diffuser_walls*2)+2;
-diffuser_w=socle_w+(diffuser_walls*2)+2;
-diffuser_h=16;
-diffuser_shell=8;
 
 module colonne1(x=0,y=0,height=-1,shell=1.6,topstyle="flat"){
-	h=(x+1)*4+(y+1)*4;
+	
+	//hauteur colonne
+	h=(x+1)*2.6+(y+1)*2.6;
+	
+	//shell colonne
 	difference() {
 		cube([led_l+(shell*2),led_w+(shell*2),h]);
-		translate([shell,shell,0])
-			cube([led_l,led_w,h +.1]);
+		translate([shell-0.4,shell-0.4,-.1])
+			cube([led_l+0.8,led_w+0.8,h +.2]);
 	}
+	
 	//toit plat
 	translate([0,0,h])
-		cube([led_l+(shell*2),led_w+(shell*2),2]);
+		cube([led_l+(shell*2),led_w+(shell*2),1.4]);
 }
-
 
 module colonne2(x=0,y=0,height=-1,shell=0.6,topstyle="flat"){
 	h=(x+1)*5+(y+1)*5;
-	
 	rc = (sqrt(3)/2)*5;
 	ofX=((rc+2*shell)/2)+1/3;
 	ofY=((rc+2*shell)/2)+1/3;
@@ -79,28 +125,47 @@ module colonne2(x=0,y=0,height=-1,shell=0.6,topstyle="flat"){
 	}
 }
 
-
-module diffuser(type="colonne1") {
+module top() {
 	
-	//base
+	//shell cube accroche top
 	difference(){
 		cube([diffuser_l,diffuser_w,diffuser_shell]);
 		translate([diffuser_walls+1-.2,diffuser_walls+1-.2,-.1])
 			cube([diffuser_l-diffuser_walls*2-2+.4,diffuser_w-diffuser_walls*2-2+.4,diffuser_shell+.2]);
 	}
 	
+	//shell cube diffuseur
+	translate([0,0,diffuser_shell]) {
+		difference() {
+			cube([diffuser_l,diffuser_w,diffuser_walls+4]);
+			translate([5.4,5.4,-.1])
+				cube([diffuser_l-5.4*2,diffuser_w-5.4*2,diffuser_walls+4+.2]);
+		}
+	}
+}
+
+module diffuser(type="colonne1") {
+	
+	//base
+	//difference(){
+	//	cube([diffuser_l,diffuser_w,diffuser_shell]);
+	//	translate([diffuser_walls+1-.2,diffuser_walls+1-.2,-.1])
+	//		cube([diffuser_l-diffuser_walls*2-2+.4,diffuser_w-diffuser_walls*2-2+.4,diffuser_shell+.2]);
+	//}
+	
 	//trous base
 	translate([0,0,diffuser_shell]) {
 		difference(){
-			cube([diffuser_l,diffuser_w,diffuser_walls]);
+			translate([5.8,5.8,0])
+			cube([diffuser_l-5.8*2,diffuser_w-5.8*2,diffuser_walls]);
 			firstled_x=diffuser_walls+socle_walls+4;
 			firstled_y=diffuser_walls+socle_walls+4;
 			for(x=[0:leds_x-1]){
 				for(y=[0:leds_y-1]){
 					posx=firstled_x+(x*led_spacing);
 					posy=firstled_y+(y*led_spacing);
-					translate([posx,posy,-.1])
-						cube([led_l,led_w,6]);
+					translate([posx-.4,posy-.4,-.1])
+						cube([led_l+.8,led_w+.8,6]);
 				}
 			}
 		}
@@ -126,32 +191,16 @@ module diffuser(type="colonne1") {
 	}
 }
 
-//-----------------------------------------------------------------------------------
-
-bottom_walls=diffuser_walls;
-bottom_l=socle_l+(bottom_walls*2)+2;
-bottom_w=socle_w+(bottom_walls*2)+2;
-pcb_w = 30.48;
-pcb_l = 58.42;
-module support_pcb() {
-	supportPcb(pcb_l,pcb_w,diffuser_shell+2,true,true);
-}
-
-esp32_epaisseurpcb=1.6;
-btnbodyl=3.92;
-btnbodyw=2.96;
-btnbodyh=1.8;
-pcbw=28;
-pcbl=54.6;
-
+//support vis esp32
 module esp32_trouvis() {
 	hauteurdecoupevis=esp32_epaisseurpcb+.2;
 	diavis=2.4;
+	
 	cylinder(hauteurdecoupevis,diavis/2,diavis/2, $fn=30);
 }
 
+//boutons reset et boot de l'esp32
 module esp32_bouton() {
-
 	btnh=.2;
 	btndia=1.2;
 	
@@ -292,40 +341,6 @@ module cuberond(l,w,h) {
 	}
 }
 
-
-bottom_h=16;
-module bottom() {
-	difference(){
-		cube([bottom_l,bottom_w,bottom_h]);
-		translate([bottom_walls+1-.2,bottom_walls+1-.2,bottom_walls])
-			cube([bottom_l-bottom_walls*2-2+.4,bottom_w-bottom_walls*2-2+.4,100]);
-		
-		//forme decoupe usb
-		translate([bottom_l/2,bottom_w,4+bottom_walls])
-			rotate([90,0,0])
-				cuberond(l=10,w=5,h=2);
-		
-		translate([bottom_l/2,bottom_w-(pcbl/2)-bottom_walls-1.5+.4,bottom_walls])
-			rotate([0,0,180])
-				translate([0,0,5+esp32_epaisseurpcb+.1])
-					rotate([0,180,0])
-						#formedecoupe_esp32();
-	}
-	
-	translate([bottom_l/2,bottom_w-(pcbl/2)-bottom_walls-1.5+.4,bottom_walls])
-		rotate([0,0,180])
-			support_esp32();
-	
-	
-	
-	
-}
-
-diamic=9.4;
-lmic=20;
-wmic=14;
-hmic=5;
-
 module support_micro() {
 	ofXmic=3+diamic/2;
 	ofYmic=wmic/2;
@@ -345,13 +360,7 @@ module support_micro() {
 		translate([lmic-wpins,(wmic-lpins)/2,hmic-1.6])
 			cube([wpins,lpins,10]);
 	}
-	
 }
-
-diaspk=20;
-hspk=1;
-hsupportspk=9;
-diasupportspk=30;
 
 module support_speaker() {
 	difference() {
@@ -366,38 +375,131 @@ module support_speaker() {
 	
 }
 
-module preview(){
-	%top();
-	translate([-2,-2,socle_h-diffuser_shell])
-		%diffuser();
-	translate([-2,-2,-diffuser_shell])
-		bottom();
+module bottom() {
+	difference(){
+		
+		//shell
+		cube([bottom_l,bottom_w,bottom_h]);
+		translate([bottom_walls+1-.2,bottom_walls+1-.2,bottom_walls])
+			cube([bottom_l-bottom_walls*2-2+.4,bottom_w-bottom_walls*2-2+.4,100]);
+		
+		//forme decoupe usb
+		translate([bottom_l/2,bottom_w,4+bottom_walls])
+			rotate([90,0,0])
+				cuberond(l=10,w=5,h=2);
+		
+		//trous pour les boutons de l'esp32
+		translate([bottom_l/2,bottom_w-(pcbl/2)-bottom_walls-1.5+.4,bottom_walls])
+			rotate([0,0,180])
+				translate([0,0,5+esp32_epaisseurpcb+.1])
+					rotate([0,180,0])
+						formedecoupe_esp32();
+		
+		//forme decoupe micro 
+		
+		//trou central
+		translate([bottom_l/2,5,bottom_h/2])
+			rotate([90,0,0])
+				cylinder(10,2/2,2/2,$fn=100);
+				
+		//cercle de trous
+		for(i=[1:6]){
+			r=3;
+			x2=r * sin(i*60);
+			y2=r * cos(i*60);
+			translate([bottom_l/2 +x2,5,bottom_h/2 + y2])
+				rotate([90,0,0])
+					cylinder(10,2/2,2/2,$fn=100);
+		}
+	}
+	
+	//support esp32
+	translate([bottom_l/2,bottom_w-(pcbl/2)-bottom_walls-1.5+.4,bottom_walls])
+		rotate([0,0,180])
+			support_esp32();
+	
+	//support micro
+	translate([bottom_l/2+ lmic/2 -2.2,0,bottom_walls])
+		rotate([90,0,180])
+			support_micro();
 }
 
+module preview(eclate=true){
+	
+	color("white") 
+		body();
+	
+	if(eclate) {
+		translate([-2,-2,socle_h-diffuser_shell+45]){
+			color("gray") top();
+		}
+	} else {
+		translate([-2,-2,socle_h-diffuser_shell]) {
+			color("gray") top();
+		}
+	}
+	
+	if(eclate) {
+		translate([-2,-2,socle_h-diffuser_shell+75]){
+			%diffuser();
+		}
+	} else {
+		translate([-2,-2,socle_h-diffuser_shell]) {
+			%diffuser();
+		}
+	}
+	
+	
+	if(eclate) {
+		//fond
+		translate([-2,-2,-bottom_walls-55])
+			color("gray") bottom();
+		//esp
+		translate([socle_w/2,socle_l-(pcbl/2)-.1,-bottom_walls+5+2.6-25])
+			rotate([180,0,0])
+				%esp32();
+	} else {
+		//fond
+		translate([-2,-2,-bottom_walls])
+			color("gray") bottom();
+		//esp
+		translate([socle_w/2,socle_l-(pcbl/2)-.1,-bottom_walls+5+2.6])
+			rotate([180,0,0])
+				%esp32();
+	}
+}
+
+
+
 //Impression supports de test
-//support_esp32();
-//support_speaker();
-//support_micro();
+//------------------------------------
+	//support_esp32();
+	//support_speaker();
+	//support_micro();
 
+//Impression pieces
+//------------------------------------
+	//top();
+	//body();
+	//bottom();
+	//diffuser(type="colonne1");
+	//diffuser(type="colonne2");
 
-/*
-//preview esp32
-translate([0,0,5+1.6+15])
-	rotate([0,180,0])
-		esp32();
-*/
+//Previews
+//------------------------------------
+	preview(eclate=true);
+	//preview(eclate=false); 
 
-/*
-//preview formedecoupe_esp32
-translate([0,0,5+1.6])
-	rotate([0,180,0])
-		formedecoupe_esp32();
-*/
+	/*
+	//preview esp32
+	translate([0,0,5+1.6+15])
+		rotate([0,180,0])
+			esp32();
+	*/
 
-preview();
-
-//diffuser(type="colonne1");
-//diffuser(type="colonne2");
-//top();
-//bottom();
-//cuberond(10,10,1);
+	/*
+	//preview formedecoupe_esp32
+	translate([0,0,5+1.6])
+		rotate([0,180,0])
+			formedecoupe_esp32();
+	*/
