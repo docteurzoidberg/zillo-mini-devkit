@@ -2,16 +2,12 @@
 #define mw 8
 #define mh 8
 #define NUMMATRIX (mw*mh)
-#define PIN 21
+#define LEDPIN 27
 
-#include <Adafruit_MPU6050.h>
-#include <Adafruit_Sensor.h>
 #include <Adafruit_GFX.h>
 #include <FastLED.h>
 #include <FastLED_NeoMatrix.h>
-#include <Wire.h>
-
-Adafruit_MPU6050 mpu;
+#include <SPI.h>
 
 CRGB matrixleds[NUMMATRIX];
 
@@ -24,24 +20,8 @@ const uint16_t colors[] = {
   matrix->Color(255, 0, 0), matrix->Color(0, 255, 0), matrix->Color(0, 0, 255) };
 
 void setup() {
-
     Serial.begin(115200);
-
-    // Try to initialize!
-    if (!mpu.begin()) {
-      Serial.println("Failed to find MPU6050 chip");
-      while (1) {
-        delay(10);
-      }
-    }
-
-    mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
-    mpu.setGyroRange(MPU6050_RANGE_250_DEG);
-    mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
-    delay(100);
-
-    FastLED.addLeds<NEOPIXEL,PIN>(matrixleds, NUMMATRIX);
-
+    FastLED.addLeds<NEOPIXEL,LEDPIN>(matrixleds, NUMMATRIX);
     matrix->begin();
     matrix->setTextWrap(false);
     matrix->setBrightness(40);
@@ -71,12 +51,6 @@ uint32_t Wheel(byte WheelPos) {
 }
 
 void loop() {
-
-  /* Take a new reading */
-  mpu.read();
-
-  /* Get new sensor events with the readings */
-  sensors_event_t a, g, temp;
 
   //texte qui scroll
   if((demo==0) && (millis()-lastshow>100)){

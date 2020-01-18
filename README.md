@@ -1,16 +1,24 @@
-# zillo-mini-devkit
+# Bataille des artisans v1: Le mini zillo-mini-devkit !
 
-## esp32 pinout
+### code/
 
-![esp32 pinout](doc/ESP32-pinout-mapping.png)
+des exemple de projets (programmes) PIO pour le zillo-mini-devkit
 
-## pcb
-![front](https://i.imgur.com/w5FB8dj.png)
-![back](https://i.imgur.com/TXoOl5r.png)
+(ajoutés au fur et a mesure des epreuves)
 
+### doc/
 
-## boitier
+les docs (pdfs, images, markdown)
 
-## diffuseur
+### kicad/
 
-1) ![defaut](https://i.imgur.com/voREZIB.png)
+schema et pcb Kicad
+
+### scad
+
+fichiers source openscad du boitier
+
+### stl: fichiers 3d
+
+pour impression 3d ou autre
+
