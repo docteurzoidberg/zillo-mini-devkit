@@ -4,7 +4,8 @@
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 
-#define MIC_SAMPLES (1024*2)
+#define MIC_SAMPLES 16
+
 #define MIC_PIN 34
 
 #define LED_PIN     27
@@ -14,49 +15,14 @@
 
 #define BRIGHTNESS  100
 #define FRAMES_PER_SECOND 60
-
-// Fire2012 by Mark Kriegsman, July 2012
-// as part of "Five Elements" shown here: http://youtu.be/knWiGsmgycY
-////
-// This basic one-dimensional 'fire' simulation works roughly as follows:
-// There's a underlying array of 'heat' cells, that model the temperature
-// at each point along the line.  Every cycle through the simulation,
-// four steps are performed:
-//  1) All cells cool down a little bit, losing heat to the air
-//  2) The heat from each cell drifts 'up' and diffuses a little
-//  3) Sometimes randomly new 'sparks' of heat are added at the bottom
-//  4) The heat from each cell is rendered as a color into the leds array
-//     The heat-to-color mapping uses a black-body radiation approximation.
-//
-// Temperature is in arbitrary units from 0 (cold black) to 255 (white hot).
-//
-// This simulation scales it self a bit depending on NUM_LEDS; it should look
-// "OK" on anywhere from 20 to 100 LEDs without too much tweaking.
-//
-// I recommend running this simulation at anywhere from 30-100 frames per second,
-// meaning an interframe delay of about 10-35 milliseconds.
-//
-// Looks best on a high-density LED setup (60+ pixels/meter).
-//
-//
-// There are two main parameters you can play with to control the look and
-// feel of your fire: COOLING (used in step 1 above), and SPARKING (used
-// in step 3 above).
-//
-// COOLING: How much does the air cool as it rises?
-// Less cooling = taller flames.  More cooling = shorter flames.
-// Default 50, suggested range 20-100
 #define COOLING  55
-
-// SPARKING: What chance (out of 255) is there that a new spark will be lit?
-// Higher chance = more roaring fire.  Lower chance = more flickery fire.
-// Default 120, suggested range 50-200.
 #define SPARKING 120
 
 
 bool gReverseDirection = false;
 
 CRGB leds[NUM_LEDS];
+
 
 Adafruit_MPU6050 mpu;
 
@@ -671,6 +637,7 @@ void Fire2012()
 // determine if analog or digital, determine range and average.
 void MeasureAnalog()
 {
+    uint16_t k=0;
     uint16_t signalAvg = 0, signalMax = 0, signalMin = 1024, t0 = millis();
     for (int i = 0; i < MIC_SAMPLES; i++)
     {
@@ -678,7 +645,7 @@ void MeasureAnalog()
         while(adcBusy(MIC_PIN)){
           ;
         }
-        uint16_t k = adcEnd(MIC_PIN);
+        k = adcEnd(MIC_PIN);
         signalMin = min(signalMin, k);
         signalMax = max(signalMax, k);
         signalAvg += k;
@@ -686,7 +653,7 @@ void MeasureAnalog()
     signalAvg /= MIC_SAMPLES;
 
     // print
-    Serial.print("Time: " + String(millis() - t0));
+    Serial.print("k: " + String(millis() - t0));
     Serial.print(" Min: " + String(signalMin));
     Serial.print(" Max: " + String(signalMax));
     Serial.print(" Avg: " + String(signalAvg));
@@ -803,11 +770,31 @@ void melodyTask( void * pvParameters ){
     }
 }
 
+void analogTask( void * pvParameters ){
+    //String taskMessage = "Task running on core ";
+    //taskMessage = taskMessage + xPortGetCoreID();
+    //Serial.println(taskMessage);
+    while(true){
+        MeasureAnalog();
+        delay(1);
+    }
+}
+
+void mpuTask( void * pvParameters ){
+    //String taskMessage = "Task running on core ";
+    //taskMessage = taskMessage + xPortGetCoreID();
+    //Serial.println(taskMessage);
+    while(true){
+        MeasureMPU();
+        delay(1000);
+    }
+}
+
 void setup() {
 
-  //analogSetAttenuation(ADC_2_5db);
+  analogSetAttenuation(ADC_11db);
   adcAttachPin(MIC_PIN);
-  analogSetPinAttenuation(MIC_PIN, ADC_2_5db);
+  analogSetPinAttenuation(MIC_PIN, ADC_11db);
 
   Serial.begin(115200);
   while (!Serial) {
@@ -830,9 +817,16 @@ void setup() {
   FastLED.setBrightness(BRIGHTNESS);
 
   Serial.println("");
+
   delay(100);
+
   playMelody("$T120 L16 O4 CEG>C8");
-  static int taskCore = 0;
+
+  delay(1000);
+
+  static int taskCore1 = 0;
+  static int taskCore2 = 1;
+
   xTaskCreatePinnedToCore(
                     melodyTask,   /* Function to implement the task */
                     "melody",     /* Name of the task */
@@ -840,19 +834,29 @@ void setup() {
                     NULL,         /* Task input parameter */
                     0,            /* Priority of the task */
                     NULL,         /* Task handle. */
-                    taskCore);    /* Core where the task should run */
+                    taskCore1);    /* Core where the task should run */
+
+  xTaskCreatePinnedToCore(
+                    analogTask,   /* Function to implement the task */
+                    "analog",     /* Name of the task */
+                    4096,        /* Stack size in words */
+                    NULL,         /* Task input parameter */
+                    0,            /* Priority of the task */
+                    NULL,         /* Task handle. */
+                    taskCore2);    /* Core where the task should run */
+
+  xTaskCreatePinnedToCore(
+                    mpuTask,   /* Function to implement the task */
+                    "mpu",     /* Name of the task */
+                    4096,        /* Stack size in words */
+                    NULL,         /* Task input parameter */
+                    0,            /* Priority of the task */
+                    NULL,         /* Task handle. */
+                    taskCore2);    /* Core where the task should run */
 }
 
-uint16_t t;
-
 void loop() {
-
-  // put your main code here, to run repeatedly:
-  t=millis();
-  MeasureAnalog();
-  MeasureMPU();
-  Fire2012(); // run simulation frame
-  t=millis()-t;
-  FastLED.show(); // display this frame
-  //FastLED.delay((1000/ FRAMES_PER_SECOND)-t);
+  Fire2012();
+  FastLED.show();
+  FastLED.delay(1000/ FRAMES_PER_SECOND);
 }
