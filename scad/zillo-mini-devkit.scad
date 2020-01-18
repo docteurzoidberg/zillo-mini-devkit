@@ -33,16 +33,16 @@ pcbw=28;
 pcbl=54.6;
 
 //support micro
-diamic=9.4;
+diamic=11.4;
 lmic=20;
 wmic=14;
 hmic=5;
 
 diaspk=20;
 hspk=1;
-hsupportspk=9;
-diasupportspk=30;
-bottom_h=16;
+hsupportspk=8;
+diasupportspk=22;
+bottom_h=20;
 
 //validé: correspond parfait a la matrice!
 module grid(){
@@ -64,11 +64,11 @@ module grid(){
 module bodydecoupe() {
 	//decoupe support pcb
 	translate([socle_l/2,socle_w,6.6/2])
-		cube([pcbw+.4,20,5+1.6],center=true);
+		cube([pcbw+2,20,8],center=true);
 	
 	//decoupe support micro
-	translate([bottom_l/2 -2-2.2,0,wmic/2-.1])
-		cube([lmic+.6,10,wmic+.7],center=true);
+	translate([bottom_l/2 -2-1.2,0,(wmic+2)/2 -.1])
+		cube([lmic+2,20,(bottom_h-wmic)/2 +    wmic+2+.1],center=true);
 }
 
 module body() {
@@ -80,6 +80,9 @@ module body() {
 				cube([socle_l,socle_w,socle_h]);
 				translate([socle_walls+1,socle_walls+1,-.1])
 					cube([socle_l-socle_walls*2-2,socle_w-socle_walls*2-2,socle_h+.2]);
+				//FIX: forcait sur le pcb, diminution a l'arrache des cotes interieurs
+				translate([socle_walls,socle_walls,-.1])
+					cube([socle_l-socle_walls*2+.4,socle_w-socle_walls*2+.4,socle_h-grid_h]);
 			}
 			
 			//grille matrice
@@ -345,7 +348,7 @@ module support_micro() {
 	ofXmic=3+diamic/2;
 	ofYmic=wmic/2;
 	oftrou=1.2;
-	diatrou=1.8;
+	diatrou=.8;
 	wpins=3;
 	lpins=9;
 	
@@ -364,13 +367,13 @@ module support_micro() {
 
 module support_speaker() {
 	difference() {
-		cylinder(hsupportspk, (diasupportspk/2),(diasupportspk/2), $fn=50);
+		cylinder(hsupportspk, (diasupportspk/2),(diasupportspk/2), $fn=100);
 		for(i=[0:10]){
 			translate([i,0,hsupportspk-2-hspk])
-				cylinder(hspk+.2,diaspk/2,diaspk/2, $fn=50);
+				cylinder(hspk+.2,diaspk/2,diaspk/2, $fn=100);
 		}
 		translate([0,0,-.1])
-			cylinder(hsupportspk-2-hspk+.2,(diaspk-2)/2,(diaspk-2)/2, $fn=50);
+			cylinder(hsupportspk-2-hspk+.2,(diaspk-6)/2,(diaspk-6)/2, $fn=100);
 	}
 	
 }
@@ -419,9 +422,15 @@ module bottom() {
 			support_esp32();
 	
 	//support micro
-	translate([bottom_l/2+ lmic/2 -2.2,0,bottom_walls])
+	translate([bottom_l/2+ lmic/2 -1.2,bottom_walls,(bottom_h-wmic)/2])
 		rotate([90,0,180])
 			support_micro();
+	
+//support esp32
+	//translate([bottom_l/6,bottom_w/1.25,bottom_walls])
+		//rotate([0,0,270])
+			//support_speaker();
+	
 }
 
 module preview(eclate=true){
@@ -487,8 +496,9 @@ module preview(eclate=true){
 
 //Previews
 //------------------------------------
-	preview(eclate=true);
-	//preview(eclate=false); 
+
+	//preview(eclate=true); 
+	preview(eclate=false); 
 
 	/*
 	//preview esp32
