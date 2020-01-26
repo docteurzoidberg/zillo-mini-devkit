@@ -1,12 +1,15 @@
+#include <Arduino.h>
+#include <SPI.h>
 #include <FastLED.h>
 
-#define LED_PIN     5
+#define LED_PIN     27
 #define COLOR_ORDER GRB
 #define CHIPSET     WS2811
 #define NUM_LEDS    64
 
-#define BRIGHTNESS  100
+#define BRIGHTNESS  20
 #define FRAMES_PER_SECOND 60
+
 
 bool gReverseDirection = false;
 
